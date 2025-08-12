@@ -101,6 +101,9 @@ RUN python -c "import numpy; print(f'NumPy: {numpy.__version__}')" && \
     python -c "import cv2; print(f'OpenCV: {cv2.__version__}')" && \
     python -c "from ultralytics import YOLO; print('Ultralytics imported successfully')"
 
+# Install all packages with constraints
+RUN pip install --no-cache-dir -c constraints.txt -r requirements.txt
+
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
 
