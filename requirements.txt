@@ -4,7 +4,7 @@ uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 
 # IMPORTANT: Pin numpy to 1.x BEFORE other packages
-numpy<2.0,>=1.24.0
+numpy==2.2.6
 
 # ML and Computer Vision
 opencv-python-headless==4.8.1.78
