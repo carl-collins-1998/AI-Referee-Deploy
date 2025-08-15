@@ -21,7 +21,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 # Try to check numpy version without triggering errors
 try:
     import numpy as np
-
     print(f"[yolo_loader_fix] NumPy version: {np.__version__}")
 
     # Add compatibility attribute if missing
