@@ -1,10 +1,75 @@
 import os
+import sys
+import warnings
 from pathlib import Path
 from typing import Dict, Any, List
 import tempfile
 import shutil
 from contextlib import asynccontextmanager
+import urllib.request
 
+# Suppress all warnings before any ML imports
+warnings.filterwarnings('ignore')
+os.environ['PYTHONWARNINGS'] = 'ignore'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+# Global variables
+IS_RAILWAY = any([
+    "RAILWAY_ENVIRONMENT" in os.environ,
+    "RAILWAY_STATIC_URL" in os.environ,
+    os.path.exists("/app")
+])
+
+if IS_RAILWAY:
+    MODEL_PATH = "/app/models/best.pt"
+else:
+    MODEL_PATH = r"C:/Users/carlc/Desktop/API  AI REFEREE MODEL/runs/detect/train3/weights/best.pt"
+
+MODEL_URL = os.getenv("MODEL_URL")
+scorer_instance = None
+
+# Try to import ML libraries with better error handling
+ML_AVAILABLE = False
+IMPORT_ERROR = None
+
+try:
+    # First, try to set up numpy compatibility
+    import numpy as np
+
+    print(f"NumPy version: {np.__version__}")
+
+    # Add compatibility attribute if missing (for NumPy 2.x)
+    if not hasattr(np, '_ARRAY_API'):
+        np._ARRAY_API = None
+
+    # Now try to import the ML libraries
+    import cv2
+
+    print(f"OpenCV version: {cv2.__version__}")
+
+    # Import torch before ultralytics
+    import torch
+
+    print(f"PyTorch version: {torch.__version__}")
+
+    # Finally, import your basketball_referee module
+    # Don't import the yolo_loader_fix since we're handling it here
+    from basketball_referee import ImprovedFreeThrowScorer, CVATDatasetConverter, FreeThrowModelTrainer
+
+    ML_AVAILABLE = True
+    print("✅ ML dependencies loaded successfully")
+
+except ImportError as e:
+    IMPORT_ERROR = str(e)
+    print(f"⚠️ ML dependencies not available: {e}")
+    print("API will run in limited mode")
+except Exception as e:
+    IMPORT_ERROR = str(e)
+    print(f"⚠️ Error loading ML dependencies: {e}")
+    print("API will run in limited mode")
+
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 
