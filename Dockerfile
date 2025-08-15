@@ -1,17 +1,16 @@
-# Use a stable, modern Python base image
-FROM python:3.10-slim
+FROM python:3.10-slim-bullseye
 
-# Prevent apt from prompting for input
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies for OpenCV, YOLO, etc.
-RUN apt-get update --fix-missing && apt-get install -y \
+# Fix apt sources and install dependencies
+RUN apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
     libglib2.0-0 \
     libgomp1 \
-    wget \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+    wget && \
+    rm -rf /var/lib/apt/lists/*
+
 
 # Set the working directory
 WORKDIR /app
