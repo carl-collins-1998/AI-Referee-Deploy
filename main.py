@@ -70,8 +70,6 @@ except Exception as e:
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, UploadFile, File, HTTPException, Form
-from fastapi.middleware.cors import CORSMiddleware
 
 # Import the fix BEFORE importing basketball_referee
 try:
